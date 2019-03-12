@@ -45,14 +45,9 @@ class player(object):
             prozor.blit(slikaIgraca,(self.x,self.y))
                 
 def osveziSliku():
-    #nakon kretnje objekta da se pozadina apdejta
     # kad stavimo global to znaci da koristimo
     #vec postojecu promenljivu sa ovim imenom, deklarisanu van funkcije
-    #i ne zelimo neku novu unutar funkcije sa istim tim imenom
-    #nas objekat,trenutni objekat pre implementacije sprite
-    #prozor.fill((0,0,0))
-    #pygame.draw.rect(prozor, (255,0,0), (x,y,sirObjekta,visObjekta))
-    #pygame.display.update()
+    
     prozor.blit(pozadina,(0,0))
     igrac.draw(prozor)
     pygame.display.update()
