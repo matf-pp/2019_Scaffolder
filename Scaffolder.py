@@ -7,8 +7,44 @@ visinaProzora=600;
 sirinaProzora=500;
 
 prozor= pygame.display.set_mode((sirinaProzora,visinaProzora))
-
 pygame.display.set_caption("Scaffolder")
+############## START EKRAN ##################
+def text_objects(poruka, boja,vel_font=25):
+    font = pygame.font.SysFont(None , vel_font)
+    textSurface = font.render(poruka, True, boja)
+    return textSurface, textSurface.get_rect()
+def ispisi_poruku(poruka , boja , y_pomeraj = 0, vel_font=25):
+    #font = pygame.font.SysFont(None , vel_font)
+    TextSurf, TextRect = text_objects(poruka, boja,vel_font)
+    TextRect.center = (255,500/2 + y_pomeraj) 
+    prozor.blit(TextSurf, TextRect)
+def start_igre():
+    intro = True
+
+    while intro:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    intro = False
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+
+
+        #prozor.fill((255,255,255))
+        pozadina=pygame.image.load('start.jpg')
+        prozor.blit(pozadina,(0,0))
+        ispisi_poruku("Welcome to Scaffolder" , (0,155,0),-100,65)
+        ispisi_poruku("Game by: " , (255,255,255),-70,25)
+        ispisi_poruku("Danilo||Alen||Bogosav" , (255,255,255),-50,25)
+        ispisi_poruku("Klikni \"s\" za start ili \"q\" za quit!"  , (255,255,255),100,25)
+        pygame.display.update()
+        #pygame.time.Clock().tick(15)
+
 
 #animacija, treba popraviti, ovo je samo trenutno
 hodajDesno=[pygame.image.load('1.jpg'),pygame.image.load('2.jpg'),pygame.image.load('3.jpg')]
@@ -93,6 +129,8 @@ platforme = []
 platforme.append(zemlja)
 #GLAVNA UPDATE FUNKCIJA
 run=True
+GameOver = False
+start_igre()
 while run:
     #milisekunde, FPS, koliko cesto se slika apdejta
     #for plat in platforme:
@@ -101,7 +139,29 @@ while run:
 
     pygame.time.delay(27) #3*3
     
-    
+    while GameOver == True:
+        pomocna_pozadina=pygame.image.load('start.jpg')
+        prozor.blit(pomocna_pozadina,(0,0))
+        #prozor.fill((0,0,0))
+        ispisi_poruku("GameOver" , (255,25,25),0,50)
+        ispisi_poruku("Ako hoces opet klikni \"s\", ako pak neces klikni \"q\"!" , (255,255,255), 100)
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    GameOver = False
+                    run = True
+                if event.key == pygame.K_q:
+                    GameOver = False
+                    run = False
+
+    if igrac.y <0:
+        GameOver = True
+        igrac.y = 300
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             run=False
