@@ -47,9 +47,10 @@ def start_igre():
 
 
 #animacija, treba popraviti, ovo je samo trenutno
-hodajDesno=[pygame.image.load('1.jpg'),pygame.image.load('2.jpg'),pygame.image.load('3.jpg')]
-hodajLevo=[pygame.transform.flip(pygame.image.load('1.jpg'),True,False),pygame.transform.flip(pygame.image.load('2.jpg'),True,False),pygame.transform.flip(pygame.image.load('3.jpg'),True,False)]
-slikaIgraca=pygame.image.load('5.jpg')
+hodajDesno=[pygame.image.load('w1.png'),pygame.image.load('w2.png'),pygame.image.load('w3.png'),pygame.image.load('w4.png'),pygame.image.load('w5.png'),pygame.image.load('w6.png'),pygame.image.load('w7.png'),pygame.image.load('w8.png')]
+hodajLevo=[pygame.transform.flip(pygame.image.load('w1.png'),True,False),pygame.transform.flip(pygame.image.load('w2.png'),True,False),pygame.transform.flip(pygame.image.load('w3.png'),True,False),pygame.transform.flip(pygame.image.load('w4.png'),True,False),pygame.transform.flip(pygame.image.load('w5.png'),True,False),pygame.transform.flip(pygame.image.load('w6.png'),True,False),pygame.transform.flip(pygame.image.load('w7.png'),True,False),pygame.transform.flip(pygame.image.load('w8.png'),True,False)]
+slikaIgraca=pygame.image.load('w1.png')
+skok=[pygame.image.load('j1.png'),pygame.image.load('j2.png'),pygame.image.load('j3.png'),pygame.image.load('j4.png'),pygame.image.load('j5.png'),pygame.image.load('j6.png'),pygame.image.load('j7.png')]
 pozadina=pygame.image.load('pozadina.jpg')
 clock=pygame.time.Clock()
 platformaSlika=pygame.image.load('platformaSlika.png')
