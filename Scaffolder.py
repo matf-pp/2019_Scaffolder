@@ -5,7 +5,6 @@ pygame.init()
 
 visinaProzora=600;
 sirinaProzora=500;
-
 prozor= pygame.display.set_mode((sirinaProzora,visinaProzora))
 pygame.display.set_caption("Scaffolder")
 
@@ -36,46 +35,35 @@ def ispisi_poruku(poruka , boja , y_pomeraj = 0, vel_font=25):
     TextSurf, TextRect = text_objects(poruka, boja,vel_font)
     TextRect.center = (255,500/2 + y_pomeraj) 
     prozor.blit(TextSurf, TextRect)
-
-
-#Pauza---------------------------------
+###########Pauza---------------------------------
 def pauza():
     pauza_promenljiva = True
-
     while pauza_promenljiva:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     pauza_promenljiva = False
-
                 elif event.key == pygame.K_q:
                     pygame.quit()
                     quit()
-
         ispisi_poruku("Pauza", (255,255,255) , -120, 75)
         ispisi_poruku("\"p\" - nastavak  \"q\" - izlaz iz igre" ,(255,255,255) , 0)
         pygame.display.update()
-        clock.tick(5)
+        clock.tick(3)
 
-
-def start_igre():
-    
+def start_igre():    
     intro = True
-    
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
                     intro = False
-                    
                 if event.key == pygame.K_q:
                     pygame.quit()
                     quit()
@@ -87,11 +75,10 @@ def start_igre():
         ispisi_poruku("Alen||Bogosav||Danilo" , (255,255,255),-50,25)
         ispisi_poruku("Klikni \"s\" za start ili \"q\" za quit!"  , (255,255,255),100,25)
         ispisi_poruku("(u toku igre \"p\" za pauzu)"  , (255,255,255),120,25)
-        
         pygame.display.update()
         #pygame.time.Clock().tick(15)
 
-#pozicija i opis objekta kao i brzina kretanja
+################# KLASA IGRACA ##################
 class player(object):
     def __init__(self,x,y,sirObjekta,visObjekta,platformaa):
         self.x=x
@@ -109,43 +96,45 @@ class player(object):
         self.platformaa=platformaa
     def draw(self,prozor):
         self.hitbox=(self.x+4,self.y,self.sirObjekta-24,self.visObjekta-10)#AAA
-        if self.hodanjeBrojac + 1 >=9:
+        if self.hodanjeBrojac + 1 >=18:
         #(3*3)zelimo da nasa slika traje 3 frejma i imamo 3 razlicite slike hodanja
             self.hodanjeBrojac=0
         if self.levoOkrenut:
-            prozor.blit(hodajLevo[self.hodanjeBrojac//3],(self.x,self.y))
+            prozor.blit(hodajLevo[self.hodanjeBrojac//6],(self.x,self.y))
             self.hodanjeBrojac+=1
         elif self.desnoOkrenut:
-            prozor.blit(hodajDesno[self.hodanjeBrojac//3],(self.x,self.y))
+            prozor.blit(hodajDesno[self.hodanjeBrojac//6],(self.x,self.y))
             self.hodanjeBrojac+=1
         else:
             prozor.blit(slikaIgraca,(self.x,self.y))
         self.hitbox=(self.x+4,self.y+8,self.sirObjekta-13,self.visObjekta-13)#AAA
         pygame.draw.rect(prozor,(255,0,0),self.hitbox,2)
 
+###################### KLASA PLATFORME ##################
 class platforma(object):
-    #INICIJALIZACIJA SLIKE AKO JE U FOLDERU "slike"
-    def __init__(self,x,y,sirObjekta):
+    def __init__(self,x,y,sirObjekta,skorPlatforme):
         self.x=x
         self.y=y
         self.sirObjekta=sirObjekta
         self.visObjekta=20
+        self.skorPlatforme=skorPlatforme
     def draw(self, prozor):
         prozor.blit(pygame.transform.scale(platformaSlika,(self.sirObjekta,50)),(self.x,self.y))
         self.hitbox=(self.x+10,self.y+6,self.sirObjekta-20,30)
         pygame.draw.rect(prozor,(255,0,0),self.hitbox,2)
-    def collide(self,rect):
-        if rect[0]+rect[2]>self.hitbox and rect[0]<self.hitbox[0]+self.hitbox[2]:
-            if rect[1]+rect[3]> self.hitbox[1]:
-                return True
-            return False
+    #Neki tuzan pokusaj kolajdera, trenutna verzija mozda mnogo bolja
+    #def collide(self,rect):
+    #    if rect[0]+rect[2]>self.hitbox and rect[0]<self.hitbox[0]+self.hitbox[2]:
+    #        if rect[1]+rect[3]> self.hitbox[1]:
+    #            return True
+    #        return False
 
+############## OSVEZAVANJE EKRANA ##############
 def osveziSliku():
     # kad stavimo global to znaci da koristimo
     #vec postojecu promenljivu sa ovim imenom, deklarisanu van funkcije
     prozor.blit(pozadina,(0,0))
     zemlja.draw(prozor)
-    
     for x in platforme:
         x.draw(prozor)
     igrac.draw(prozor)
@@ -153,32 +142,29 @@ def osveziSliku():
     pygame.display.update()
 
 
-
-
-munja = 5
-indikator = False
 skor = 0
+munja = 5
+brojPlatformi=0
+indikator = False
+start_igre()
+zemlja = platforma(0,visinaProzora-37,sirinaProzora,0)
+igrac  = player(150,visinaProzora-108,42,78,zemlja)
+igrac.y = 492
+brojacZaPadanje=0
+platforme = []
+platforme.append(zemlja)
 run=True
 GameOver = False
-brojac=0
 #GLAVNA UPDATE FUNKCIJA
-while run:
-    if brojac==0:
-        brojac+=1
-        start_igre()
-        zemlja = platforma(0,visinaProzora-37,sirinaProzora)
-        igrac  = player(150,visinaProzora-108,42,78,zemlja)
-        igrac.y = 492
-        brojacZaPadanje=0
-        platforme = []
-        platforme.append(zemlja)
+while run:    
+
     #milisekunde, FPS, koliko cesto se slika apdejta
     #for plat in platforme:
     #    if plat.collide(igrac.hitbox):
     #        igrac.y=plat.y+igrac.visObjekta
-    pygame.time.delay(27) #3*3 
+    pygame.time.delay(28) #3*3 
 
-    #GameOver ekran--------------------------------------   
+############ GameOver ekran--------------------------------------   
     while GameOver == True:
         pomocna_pozadina=pygame.image.load('start.jpg')
         prozor.blit(pomocna_pozadina,(0,0))
@@ -194,9 +180,10 @@ while run:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
                     skor = 0
+                    brojPlatformi=0
                     GameOver = False
                     run = True
-                    zemlja = platforma(0,visinaProzora-37,sirinaProzora)
+                    zemlja = platforma(0,visinaProzora-37,sirinaProzora,0)
                     igrac  = player(150,visinaProzora-108,42,78,zemlja)
                     brojacZaPadanje=0
                     platforme = []
@@ -209,7 +196,6 @@ while run:
         GameOver = True
         indikator = False
 
-
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             run=False
@@ -217,27 +203,28 @@ while run:
             if event.key == pygame.K_p:
                 pauza()
 
-    #GENERACIJA PLATFORMI
-    if len(platforme) < 500:
+############# GENERACIJA PLATFORMI ###########
+    if len(platforme) < 20:
         if len(platforme) == 1:
-            platformaA = platforma(random.randint(20,sirinaProzora-170),zemlja.y-100, 200)
+            brojPlatformi+=1
+            platformaA = platforma(random.randint(20,sirinaProzora-170),zemlja.y-100, 200,brojPlatformi)
             platforme.append(platformaA)
         else:
+            brojPlatformi+=1
             platformaB = platforme.pop()
             pomocnaProm=random.random()
             if pomocnaProm <0.5:
-                platformaA = platforma(random.randint(platformaB.x-100,platformaB.x),platformaB.y-100, 200-random.randint(1,50))
+                platformaA = platforma(random.randint(platformaB.x-100,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
             else:
-                platformaA = platforma(random.randint(platformaB.x,platformaB.x+100),platformaB.y-100, 200-random.randint(1,50))                
+                platformaA = platforma(random.randint(platformaB.x,platformaB.x+100),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
             platforme.append(platformaB)
-            platforme.append(platformaA)
-        keys=pygame.key.get_pressed()
-    else:
-        del platforme[250:500]
+            platforme.append(platformaA) 
+    elif platforme[1].skorPlatforme + 4<skor:
+        platforme.pop(1)
 
-    
 
-    #KRETNJA I GRANICA KRETNJE
+    keys=pygame.key.get_pressed()
+####### KRETNJA I GRANICA KRETNJE #######
     if keys[pygame.K_LEFT] and igrac.x>0:
         igrac.x-=igrac.brzina
         igrac.levoOkrenut=True
@@ -258,25 +245,23 @@ while run:
         igrac.hodanjeBrojac=0
         #igrac.brzina=5
 
-    #SKAKANJE I PADANJE
-    if not(igrac.isStoji): #KAD NE STOJI
+####### SKAKANJE I PADANJE ##########
+
+    if not(igrac.isStoji): ####    KAD NE STOJI
         for plat in platforme:
-            if igrac.y+72>plat.y and igrac.y+72< plat.y+8 and igrac.x + igrac.sirObjekta-5>=plat.x+2 and igrac.x<= plat.x+plat.sirObjekta:
+            if igrac.y+72+7+munja>plat.y and igrac.y+72<= plat.y and igrac.x + igrac.sirObjekta-5>=plat.x+2 and igrac.x<= plat.x+plat.sirObjekta:
                 igrac.y=plat.y-igrac.visObjekta+11
                 igrac.isStoji=True
                 igrac.platformaa=plat
                 brojacZaPadanje=0
-                if plat != platforme[0]:
-                    skor = skor + 1
+                if skor < plat.skorPlatforme:
+                    skor=plat.skorPlatforme
                 break
-    else: #KAD STOJI
+    else: ######      KAD STOJI
         if igrac.x + igrac.sirObjekta-10<igrac.platformaa.x+2 or igrac.x+15> igrac.platformaa.x+igrac.platformaa.sirObjekta:
             igrac.isStoji=False
     if not(igrac.isSkok): 
-        if not(igrac.isStoji): #KAD PADA
-            #if brojacZaPadanje<15:
-            #    brojacZaPadanje+=1
-            #igrac.y+=brojacZaPadanje*1.5
+        if not(igrac.isStoji): ####   KAD PADA
             igrac.y+=7
         if keys[pygame.K_SPACE] and igrac.isStoji:
             igrac.isSkok = True
@@ -285,9 +270,7 @@ while run:
             igrac.hodanjeBrojac=0
             brojacZaPadanje=0
     else:
-        #igrac.skokBrojac=igrac.brzina
-        if igrac.skokBrojac >= 0:
-            
+        if igrac.skokBrojac >= 0: 
             igrac.y-=(igrac.skokBrojac ** 2)*0.5
             igrac.skokBrojac -= 1
         else:
@@ -295,6 +278,7 @@ while run:
             igrac.isStoji=False
             igrac.skokBrojac=igrac.intenzitetSkoka
 
+########### POCINJU PLATFORME DA SE POMERAJU ############
     if igrac.y <=256:
         indikator = True
     if indikator == True:
