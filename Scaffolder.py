@@ -1,6 +1,7 @@
 import pygame
 import random
 pygame.init()
+pygame.mixer.init()
 
 
 visinaProzora=600;
@@ -8,12 +9,23 @@ sirinaProzora=500;
 prozor= pygame.display.set_mode((sirinaProzora,visinaProzora))
 pygame.display.set_caption("Scaffolder")
 
+#-------------------ZVUUUK-----------------------
+skok_zvuk = pygame.mixer.Sound('Jump4.wav')
+
+
+
 
 #animacija, treba popraviti, ovo je samo trenutno
-hodajDesno=[pygame.image.load('w1.png'),pygame.image.load('w2.png'),pygame.image.load('w3.png'),pygame.image.load('w4.png'),pygame.image.load('w5.png'),pygame.image.load('w6.png'),pygame.image.load('w7.png'),pygame.image.load('w8.png')]
-hodajLevo=[pygame.transform.flip(pygame.image.load('w1.png'),True,False),pygame.transform.flip(pygame.image.load('w2.png'),True,False),pygame.transform.flip(pygame.image.load('w3.png'),True,False),pygame.transform.flip(pygame.image.load('w4.png'),True,False),pygame.transform.flip(pygame.image.load('w5.png'),True,False),pygame.transform.flip(pygame.image.load('w6.png'),True,False),pygame.transform.flip(pygame.image.load('w7.png'),True,False),pygame.transform.flip(pygame.image.load('w8.png'),True,False)]
-slikaIgraca=pygame.image.load('w1.png')
-skok=[pygame.image.load('j1.png'),pygame.image.load('j2.png'),pygame.image.load('j3.png'),pygame.image.load('j4.png'),pygame.image.load('j5.png'),pygame.image.load('j6.png'),pygame.image.load('j7.png')]
+hodajDesno1=[pygame.image.load('w1.png'),pygame.image.load('w2.png'),pygame.image.load('w3.png'),pygame.image.load('w4.png'),pygame.image.load('w5.png'),pygame.image.load('w6.png'),pygame.image.load('w7.png'),pygame.image.load('w8.png'),pygame.image.load('w9.png'),pygame.image.load('w10.png')]
+hodajDesno = []
+for img in hodajDesno1:
+    hodajDesno.append(pygame.transform.scale(img , (68,80)))
+hodajLevo1=[pygame.transform.flip(pygame.image.load('w1.png'),True,False),pygame.transform.flip(pygame.image.load('w2.png'),True,False),pygame.transform.flip(pygame.image.load('w3.png'),True,False),pygame.transform.flip(pygame.image.load('w4.png'),True,False),pygame.transform.flip(pygame.image.load('w5.png'),True,False),pygame.transform.flip(pygame.image.load('w6.png'),True,False),pygame.transform.flip(pygame.image.load('w7.png'),True,False),pygame.transform.flip(pygame.image.load('w8.png'),True,False),pygame.transform.flip(pygame.image.load('w9.png'),True,False),pygame.transform.flip(pygame.image.load('w10.png'),True,False)]
+hodajLevo = []
+for img in hodajLevo1:
+    hodajLevo.append(pygame.transform.scale(img , (68,80)))
+slikaIgraca=pygame.transform.scale(pygame.image.load('igrac.png') , (64,78))
+skok=pygame.transform.scale(pygame.image.load('j1.png') , (64,76))
 pozadina=pygame.image.load('pozadina.jpg')
 clock=pygame.time.Clock()
 platformaSlika=pygame.image.load('platformaSlika.png')
@@ -38,6 +50,7 @@ def ispisi_poruku(poruka , boja , y_pomeraj = 0, vel_font=25):
 ###########Pauza---------------------------------
 def pauza():
     pauza_promenljiva = True
+    pygame.mixer.music.pause()
     while pauza_promenljiva:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -46,6 +59,7 @@ def pauza():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     pauza_promenljiva = False
+                    pygame.mixer.music.unpause()
                 elif event.key == pygame.K_q:
                     pygame.quit()
                     quit()
@@ -56,6 +70,8 @@ def pauza():
 
 def start_igre():    
     intro = True
+    pygame.mixer.music.load('pocetna.wav')
+    pygame.mixer.music.play(loops=-1)
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -64,6 +80,7 @@ def start_igre():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
                     intro = False
+                    pygame.mixer.music.load('pesma.ogg')
                 if event.key == pygame.K_q:
                     pygame.quit()
                     quit()
@@ -91,24 +108,27 @@ class player(object):
         self.skokBrojac= self.intenzitetSkoka
         self.levoOkrenut=False
         self.desnoOkrenut=False
+        self.skocioJe = False
         self.hodanjeBrojac=0 #sluzi ako nasa animacija hodanja ima vise slika-faza hodanja
         self.isStoji = True
         self.platformaa=platformaa
     def draw(self,prozor):
         self.hitbox=(self.x+4,self.y,self.sirObjekta-24,self.visObjekta-10)#AAA
-        if self.hodanjeBrojac + 1 >=18:
+        if self.hodanjeBrojac + 1 >=30:
         #(3*3)zelimo da nasa slika traje 3 frejma i imamo 3 razlicite slike hodanja
             self.hodanjeBrojac=0
         if self.levoOkrenut:
-            prozor.blit(hodajLevo[self.hodanjeBrojac//6],(self.x,self.y))
+            prozor.blit(hodajLevo[self.hodanjeBrojac//3],(self.x,self.y))
             self.hodanjeBrojac+=1
         elif self.desnoOkrenut:
-            prozor.blit(hodajDesno[self.hodanjeBrojac//6],(self.x,self.y))
+            prozor.blit(hodajDesno[self.hodanjeBrojac//3],(self.x,self.y))
             self.hodanjeBrojac+=1
+        elif self.skocioJe:
+            prozor.blit(skok , (self.x, self.y))
         else:
             prozor.blit(slikaIgraca,(self.x,self.y))
         self.hitbox=(self.x+4,self.y+8,self.sirObjekta-13,self.visObjekta-13)#AAA
-        pygame.draw.rect(prozor,(255,0,0),self.hitbox,2)
+        #pygame.draw.rect(prozor,(255,0,0),self.hitbox,2)
 
 ###################### KLASA PLATFORME ##################
 class platforma(object):
@@ -128,6 +148,7 @@ class platforma(object):
     #        if rect[1]+rect[3]> self.hitbox[1]:
     #            return True
     #        return False
+
 
 ############## OSVEZAVANJE EKRANA ##############
 def osveziSliku():
@@ -156,13 +177,18 @@ platforme.append(zemlja)
 run=True
 GameOver = False
 #GLAVNA UPDATE FUNKCIJA
+pygame.mixer.music.play(loops=-1)
 while run:    
 
     #milisekunde, FPS, koliko cesto se slika apdejta
     #for plat in platforme:
     #    if plat.collide(igrac.hitbox):
     #        igrac.y=plat.y+igrac.visObjekta
-    pygame.time.delay(28) #3*3 
+    clock.tick(30)
+    if igrac.y <= visinaProzora/4:
+        igrac.y += abs(igrac.intenzitetSkoka)
+        for plat in platforme:
+            plat.y += abs (igrac.intenzitetSkoka)
 
 ############ GameOver ekran--------------------------------------   
     while GameOver == True:
@@ -179,6 +205,8 @@ while run:
                 quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
+                    pygame.mixer.music.load('pesma.ogg')
+                    pygame.mixer.music.play(loops=-1)
                     skor = 0
                     brojPlatformi=0
                     GameOver = False
@@ -188,13 +216,16 @@ while run:
                     brojacZaPadanje=0
                     platforme = []
                     platforme.append(zemlja)
-                    
+
                 if event.key == pygame.K_q:
                     GameOver = False
                     run = False
+
     if igrac.y >530:
         GameOver = True
         indikator = False
+        pygame.mixer.music.load('pocetna.wav')
+        pygame.mixer.music.play(loops=-1)
 
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
@@ -214,14 +245,19 @@ while run:
             platformaB = platforme.pop()
             pomocnaProm=random.random()
             if pomocnaProm <0.5:
-                platformaA = platforma(random.randint(platformaB.x-100,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                if(platformaB.x <= 100):
+                    platformaA = platforma(random.randint(platformaB.x,platformaB.x+150),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                else:
+                    platformaA = platforma(random.randint(platformaB.x-100,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
             else:
-                platformaA = platforma(random.randint(platformaB.x,platformaB.x+100),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                if(platformaB.x >= 400):
+                    platformaA = platforma(random.randint(platformaB.x-150,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                else:
+                    platformaA = platforma(random.randint(platformaB.x,platformaB.x+100),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
             platforme.append(platformaB)
             platforme.append(platformaA) 
     elif platforme[1].skorPlatforme + 4<skor:
         platforme.pop(1)
-
 
     keys=pygame.key.get_pressed()
 ####### KRETNJA I GRANICA KRETNJE #######
@@ -229,19 +265,27 @@ while run:
         igrac.x-=igrac.brzina
         igrac.levoOkrenut=True
         igrac.desnoOkrenut=False
-        slikaIgraca=pygame.transform.flip(pygame.image.load('w1.png'),True,False)
+        igrac.skocioJe = False
+        slikaIgraca=pygame.transform.scale((pygame.transform.flip(pygame.image.load('igrac.png'),True,False)) ,(64,76))
         #if igrac.brzina < 20:
         #    igrac.brzina+=1
     elif keys[pygame.K_RIGHT] and igrac.x<(sirinaProzora-igrac.sirObjekta):
         igrac.x+=igrac.brzina
         igrac.levoOkrenut=False
         igrac.desnoOkrenut=True
-        slikaIgraca=pygame.image.load('w1.png')
+        igrac.skocioJe = False
+        slikaIgraca=pygame.transform.scale(pygame.image.load('igrac.png') , (64,76))
         #if igrac.brzina < 20:
         #    igrac.brzina+=1
+    elif keys[pygame.K_SPACE]:
+        igrac.levoOkrenut = False
+        igrac.desnoOkrenut = False
+        igrac.skocioJe = True
+        slikaIgraca = pygame.transform.scale(pygame.image.load('j1.png') , (64,76))
     else:
         igrac.levoOkrenut=False
         igrac.desnoOkrenut=False
+        igrac.skocioJe = False
         igrac.hodanjeBrojac=0
         #igrac.brzina=5
 
@@ -260,10 +304,12 @@ while run:
     else: ######      KAD STOJI
         if igrac.x + igrac.sirObjekta-10<igrac.platformaa.x+2 or igrac.x+15> igrac.platformaa.x+igrac.platformaa.sirObjekta:
             igrac.isStoji=False
+
     if not(igrac.isSkok): 
         if not(igrac.isStoji): ####   KAD PADA
             igrac.y+=7
         if keys[pygame.K_SPACE] and igrac.isStoji:
+            skok_zvuk.play()
             igrac.isSkok = True
             igrac.levoOkrenut=False
             igrac.desnoOkrenut=False
@@ -287,4 +333,3 @@ while run:
         igrac.y += munja
     osveziSliku()
 pygame.quit()
-
