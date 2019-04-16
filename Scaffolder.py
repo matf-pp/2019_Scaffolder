@@ -24,8 +24,10 @@ hodajLevo1=[pygame.transform.flip(pygame.image.load('w1.png'),True,False),pygame
 hodajLevo = []
 for img in hodajLevo1:
     hodajLevo.append(pygame.transform.scale(img , (68,80)))
-slikaIgraca=pygame.transform.scale(pygame.image.load('igrac.png') , (64,78))
-skok=pygame.transform.scale(pygame.image.load('j1.png') , (64,76))
+slikaIgracaD=pygame.transform.scale(pygame.image.load('igrac.png') , (64,78))
+slikaIgracaL=pygame.transform.flip(slikaIgracaD,True,False)
+skokD=pygame.transform.scale(pygame.image.load('j1.png') , (64,76))
+skokL=pygame.transform.flip(skokD,True,False)
 pozadina=pygame.image.load('pozadina.jpg')
 clock=pygame.time.Clock()
 platformaSlika=pygame.image.load('platformaSlika.png')
@@ -103,32 +105,41 @@ class player(object):
         self.sirObjekta=sirObjekta
         self.visObjekta=visObjekta
         self.brzina=5
-        self.isSkok=False
+        self.isSkok=False  #KORISTI SE KOD PADANJA
         self.intenzitetSkoka=9
         self.skokBrojac= self.intenzitetSkoka
         self.levoOkrenut=False
-        self.desnoOkrenut=False
-        self.skocioJe = False
+        self.desnoOkrenut=True
+        self.isKrece=False
         self.hodanjeBrojac=0 #sluzi ako nasa animacija hodanja ima vise slika-faza hodanja
         self.isStoji = True
         self.platformaa=platformaa
     def draw(self,prozor):
-        self.hitbox=(self.x+4,self.y,self.sirObjekta-24,self.visObjekta-10)#AAA
+############# OVDE JE ANIMACIJA ##################
+#(3*3)zelimo da nasa slika traje 3 frejma i imamo 3 razlicite slike hodanja
         if self.hodanjeBrojac + 1 >=30:
-        #(3*3)zelimo da nasa slika traje 3 frejma i imamo 3 razlicite slike hodanja
             self.hodanjeBrojac=0
-        if self.levoOkrenut:
-            prozor.blit(hodajLevo[self.hodanjeBrojac//3],(self.x,self.y))
-            self.hodanjeBrojac+=1
-        elif self.desnoOkrenut:
-            prozor.blit(hodajDesno[self.hodanjeBrojac//3],(self.x,self.y))
-            self.hodanjeBrojac+=1
-        elif self.skocioJe:
-            prozor.blit(skok , (self.x, self.y))
+        if self.isStoji and not(self.isSkok):  
+            if self.levoOkrenut:
+                if self.isKrece:
+                    prozor.blit(hodajLevo[self.hodanjeBrojac//10],(self.x-10,self.y))
+                    self.hodanjeBrojac+=1
+                else:
+                    prozor.blit(slikaIgracaL,(self.x-10,self.y))
+            elif self.desnoOkrenut:
+                if self.isKrece:
+                    prozor.blit(hodajDesno[self.hodanjeBrojac//10],(self.x-10,self.y))
+                    self.hodanjeBrojac+=1
+                else:
+                    prozor.blit(slikaIgracaD,(self.x-10,self.y))
         else:
-            prozor.blit(slikaIgraca,(self.x,self.y))
-        self.hitbox=(self.x+4,self.y+8,self.sirObjekta-13,self.visObjekta-13)#AAA
-        #pygame.draw.rect(prozor,(255,0,0),self.hitbox,2)
+            if self.levoOkrenut:
+                prozor.blit(skokL , (self.x-10, self.y))
+            else:
+                prozor.blit(skokD , (self.x-10, self.y))
+            
+        
+        
 
 ###################### KLASA PLATFORME ##################
 class platforma(object):
@@ -141,7 +152,7 @@ class platforma(object):
     def draw(self, prozor):
         prozor.blit(pygame.transform.scale(platformaSlika,(self.sirObjekta,50)),(self.x,self.y))
         self.hitbox=(self.x+10,self.y+6,self.sirObjekta-20,30)
-        pygame.draw.rect(prozor,(255,0,0),self.hitbox,2)
+        #pygame.draw.rect(prozor,(255,0,0),self.hitbox,2)
     #Neki tuzan pokusaj kolajdera, trenutna verzija mozda mnogo bolja
     #def collide(self,rect):
     #    if rect[0]+rect[2]>self.hitbox and rect[0]<self.hitbox[0]+self.hitbox[2]:
@@ -169,8 +180,7 @@ brojPlatformi=0
 indikator = False
 start_igre()
 zemlja = platforma(0,visinaProzora-37,sirinaProzora,0)
-igrac  = player(150,visinaProzora-108,42,78,zemlja)
-igrac.y = 492
+igrac  = player(150,visinaProzora-105,42,78,zemlja)
 brojacZaPadanje=0
 platforme = []
 platforme.append(zemlja)
@@ -212,7 +222,7 @@ while run:
                     GameOver = False
                     run = True
                     zemlja = platforma(0,visinaProzora-37,sirinaProzora,0)
-                    igrac  = player(150,visinaProzora-108,42,78,zemlja)
+                    igrac  = player(150,visinaProzora-105,42,78,zemlja)
                     brojacZaPadanje=0
                     platforme = []
                     platforme.append(zemlja)
@@ -265,35 +275,23 @@ while run:
         igrac.x-=igrac.brzina
         igrac.levoOkrenut=True
         igrac.desnoOkrenut=False
-        igrac.skocioJe = False
-        slikaIgraca=pygame.transform.scale((pygame.transform.flip(pygame.image.load('igrac.png'),True,False)) ,(64,76))
-        #if igrac.brzina < 20:
-        #    igrac.brzina+=1
+        igrac.isKrece=True
+
     elif keys[pygame.K_RIGHT] and igrac.x<(sirinaProzora-igrac.sirObjekta):
         igrac.x+=igrac.brzina
         igrac.levoOkrenut=False
         igrac.desnoOkrenut=True
-        igrac.skocioJe = False
-        slikaIgraca=pygame.transform.scale(pygame.image.load('igrac.png') , (64,76))
-        #if igrac.brzina < 20:
-        #    igrac.brzina+=1
-    elif keys[pygame.K_SPACE]:
-        igrac.levoOkrenut = False
-        igrac.desnoOkrenut = False
-        igrac.skocioJe = True
-        slikaIgraca = pygame.transform.scale(pygame.image.load('j1.png') , (64,76))
+        igrac.isKrece=True
+
     else:
-        igrac.levoOkrenut=False
-        igrac.desnoOkrenut=False
-        igrac.skocioJe = False
+        igrac.isKrece=False
         igrac.hodanjeBrojac=0
-        #igrac.brzina=5
 
 ####### SKAKANJE I PADANJE ##########
 
     if not(igrac.isStoji): ####    KAD NE STOJI
         for plat in platforme:
-            if igrac.y+72+7+munja>plat.y and igrac.y+72<= plat.y and igrac.x + igrac.sirObjekta-5>=plat.x+2 and igrac.x<= plat.x+plat.sirObjekta:
+            if igrac.y+72+7+munja>plat.y and igrac.y+72<= plat.y and igrac.x-10 + igrac.sirObjekta-10>=plat.x+2 and igrac.x+5<= plat.x+plat.sirObjekta:#igrac.x-10 + igrac.sirObjekta-5>=plat.x+2 and igrac.x-10<= plat.x+plat.sirObjekta:
                 igrac.y=plat.y-igrac.visObjekta+11
                 igrac.isStoji=True
                 igrac.platformaa=plat
@@ -302,8 +300,9 @@ while run:
                     skor=plat.skorPlatforme
                 break
     else: ######      KAD STOJI
-        if igrac.x + igrac.sirObjekta-10<igrac.platformaa.x+2 or igrac.x+15> igrac.platformaa.x+igrac.platformaa.sirObjekta:
+        if igrac.x-10 + igrac.sirObjekta-10<igrac.platformaa.x+2 or igrac.x+5> igrac.platformaa.x+igrac.platformaa.sirObjekta:
             igrac.isStoji=False
+            
 
     if not(igrac.isSkok): 
         if not(igrac.isStoji): ####   KAD PADA
@@ -311,8 +310,6 @@ while run:
         if keys[pygame.K_SPACE] and igrac.isStoji:
             skok_zvuk.play()
             igrac.isSkok = True
-            igrac.levoOkrenut=False
-            igrac.desnoOkrenut=False
             igrac.hodanjeBrojac=0
             brojacZaPadanje=0
     else:
