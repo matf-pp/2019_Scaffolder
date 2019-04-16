@@ -34,21 +34,25 @@ platformaSlika=pygame.image.load('platformaSlika.png')
 
 
 #SCORE-------------
+
 def score(skor):
     font = pygame.font.SysFont(None , 25)
     text = font.render("Skor: "+str(skor),True , (0,0,0))
     prozor.blit(text , (0,0))
 
 ############## START EKRAN ##################
+    
 def text_objects(poruka, boja,vel_font=25):
     font = pygame.font.SysFont(None , vel_font)
     textSurface = font.render(poruka, True, boja)
     return textSurface, textSurface.get_rect()
+
 def ispisi_poruku(poruka , boja , y_pomeraj = 0, vel_font=25):
     #font = pygame.font.SysFont(None , vel_font)
     TextSurf, TextRect = text_objects(poruka, boja,vel_font)
     TextRect.center = (255,500/2 + y_pomeraj) 
     prozor.blit(TextSurf, TextRect)
+
 ###########Pauza---------------------------------
 def pauza():
     pauza_promenljiva = True
@@ -175,6 +179,9 @@ def osveziSliku():
 
 
 skor = 0
+with open("rekordi.txt") as file:  
+    rekord = file.read()
+pomocna_promenljiva_za_rekord=False
 munja = 5
 brojPlatformi=0
 indikator = False
@@ -204,7 +211,17 @@ while run:
     while GameOver == True:
         pomocna_pozadina=pygame.image.load('start.jpg')
         prozor.blit(pomocna_pozadina,(0,0))
-        #prozor.fill((0,0,0))
+        if skor>int(rekord):
+            pomocna_promenljiva_za_rekord=True
+
+
+        if pomocna_promenljiva_za_rekord:
+            ispisi_poruku("Ostvarili ste novi rekord!!!",(255,25,25),50,50)
+            rekord = skor
+            with open("rekordi.txt","w") as f:
+                f.write(str(rekord))
+        else:
+            ispisi_poruku("Rekord je: " +str(rekord),(255,255,255),50)
         ispisi_poruku("GameOver" , (255,25,25),0,50)
         ispisi_poruku("Vas skor je: " + str(skor) , (255,255,255), 25)
         ispisi_poruku("Ako hoces opet klikni \"s\", ako pak neces klikni \"q\"!" , (255,255,255), 100)
@@ -226,6 +243,7 @@ while run:
                     brojacZaPadanje=0
                     platforme = []
                     platforme.append(zemlja)
+                    pomocna_promenljiva_za_rekord=False
 
                 if event.key == pygame.K_q:
                     GameOver = False
