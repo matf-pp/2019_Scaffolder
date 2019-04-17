@@ -28,7 +28,7 @@ slikaIgracaD=pygame.transform.scale(pygame.image.load('igrac.png') , (64,78))
 slikaIgracaL=pygame.transform.flip(slikaIgracaD,True,False)
 skokD=pygame.transform.scale(pygame.image.load('j1.png') , (64,76))
 skokL=pygame.transform.flip(skokD,True,False)
-pozadina=pygame.image.load('pozadina.jpg')
+pozadina=pygame.transform.scale(pygame.image.load('pozadina.jpg'), (500,850))
 clock=pygame.time.Clock()
 platformaSlika=pygame.image.load('platformaSlika.png')
 
@@ -274,12 +274,12 @@ while run:
             pomocnaProm=random.random()
             if pomocnaProm <0.5:
                 if(platformaB.x <= 100):
-                    platformaA = platforma(random.randint(platformaB.x,platformaB.x+150),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                    platformaA = platforma(random.randint(platformaB.x,platformaB.x+130),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
                 else:
                     platformaA = platforma(random.randint(platformaB.x-100,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
             else:
                 if(platformaB.x >= 400):
-                    platformaA = platforma(random.randint(platformaB.x-150,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                    platformaA = platforma(random.randint(platformaB.x-130,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
                 else:
                     platformaA = platforma(random.randint(platformaB.x,platformaB.x+100),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
             platforme.append(platformaB)
