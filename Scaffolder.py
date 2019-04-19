@@ -28,7 +28,7 @@ slikaIgracaD=pygame.transform.scale(pygame.image.load('igrac.png') , (64,78))
 slikaIgracaL=pygame.transform.flip(slikaIgracaD,True,False)
 skokD=pygame.transform.scale(pygame.image.load('j1.png') , (64,76))
 skokL=pygame.transform.flip(skokD,True,False)
-pozadina=pygame.transform.scale(pygame.image.load('pozadina.jpg'), (500,850))
+pozadina=pygame.image.load('pozadina.jpg')
 clock=pygame.time.Clock()
 platformaSlika=pygame.image.load('platformaSlika.png')
 
@@ -36,19 +36,19 @@ platformaSlika=pygame.image.load('platformaSlika.png')
 #SCORE-------------
 
 def score(skor):
-    font = pygame.font.SysFont(None , 25)
-    text = font.render("Skor: "+str(skor),True , (0,0,0))
-    prozor.blit(text , (0,0))
+    font = pygame.font.Font('AGENCYB.ttf', 18)
+    text = font.render("SCORE: "+str(skor),True , (255,255,255))
+    prozor.blit(text , (5,5))
 
 ############## START EKRAN ##################
     
 def text_objects(poruka, boja,vel_font=25):
-    font = pygame.font.SysFont(None , vel_font)
+    font = pygame.font.Font('AGENCYB.ttf', vel_font)
     textSurface = font.render(poruka, True, boja)
     return textSurface, textSurface.get_rect()
 
 def ispisi_poruku(poruka , boja , y_pomeraj = 0, vel_font=25):
-    #font = pygame.font.SysFont(None , vel_font)
+    font = pygame.font.Font('AGENCYB.ttf', vel_font)
     TextSurf, TextRect = text_objects(poruka, boja,vel_font)
     TextRect.center = (255,500/2 + y_pomeraj) 
     prozor.blit(TextSurf, TextRect)
@@ -69,8 +69,8 @@ def pauza():
                 elif event.key == pygame.K_q:
                     pygame.quit()
                     quit()
-        ispisi_poruku("Pauza", (255,255,255) , -120, 75)
-        ispisi_poruku("\"p\" - nastavak  \"q\" - izlaz iz igre" ,(255,255,255) , 0)
+        ispisi_poruku("PAUSED", (255,255,255) , -120, 75)
+        ispisi_poruku("\"P\" - CONTINUE  \"Q\" - QUIT" ,(255,255,255) , 0)
         pygame.display.update()
         clock.tick(3)
 
@@ -93,11 +93,6 @@ def start_igre():
         #prozor.fill((255,255,255))
         pozadina=pygame.image.load('start.jpg')
         prozor.blit(pozadina,(0,0))
-        ispisi_poruku("Welcome to Scaffolder" , (0,155,0),-100,65)
-        ispisi_poruku("Game by: " , (255,255,255),-70,25)
-        ispisi_poruku("Alen||Bogosav||Danilo" , (255,255,255),-50,25)
-        ispisi_poruku("Klikni \"s\" za start ili \"q\" za quit!"  , (255,255,255),100,25)
-        ispisi_poruku("(u toku igre \"p\" za pauzu)"  , (255,255,255),120,25)
         pygame.display.update()
         #pygame.time.Clock().tick(15)
 
@@ -209,22 +204,22 @@ while run:
 
 ############ GameOver ekran--------------------------------------   
     while GameOver == True:
-        pomocna_pozadina=pygame.image.load('start.jpg')
+        pomocna_pozadina=pygame.image.load('gameover.jpg')
         prozor.blit(pomocna_pozadina,(0,0))
         if skor>int(rekord):
             pomocna_promenljiva_za_rekord=True
 
 
         if pomocna_promenljiva_za_rekord:
-            ispisi_poruku("Ostvarili ste novi rekord!!!",(255,25,25),50,50)
+            ispisi_poruku("YOU SET NEW RECORD!!!",(81,81,81),10,50)
             rekord = skor
             with open("rekordi.txt","w") as f:
                 f.write(str(rekord))
         else:
-            ispisi_poruku("Rekord je: " +str(rekord),(255,255,255),50)
-        ispisi_poruku("GameOver" , (255,25,25),0,50)
-        ispisi_poruku("Vas skor je: " + str(skor) , (255,255,255), 25)
-        ispisi_poruku("Ako hoces opet klikni \"s\", ako pak neces klikni \"q\"!" , (255,255,255), 100)
+            ispisi_poruku("MAXIMUM SCORE: " +str(rekord),(81,81,81),10,40)
+        ispisi_poruku("GAMEOVER" , (81,81,81),90,40)
+        ispisi_poruku("SCORE: " + str(skor) , (81,81,81),50, 25)
+        
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -235,6 +230,7 @@ while run:
                     pygame.mixer.music.load('pesma.ogg')
                     pygame.mixer.music.play(loops=-1)
                     skor = 0
+                    MOJE_novcici = 0
                     brojPlatformi=0
                     GameOver = False
                     run = True
@@ -274,12 +270,12 @@ while run:
             pomocnaProm=random.random()
             if pomocnaProm <0.5:
                 if(platformaB.x <= 100):
-                    platformaA = platforma(random.randint(platformaB.x,platformaB.x+130),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                    platformaA = platforma(random.randint(platformaB.x,platformaB.x+150),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
                 else:
                     platformaA = platforma(random.randint(platformaB.x-100,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
             else:
                 if(platformaB.x >= 400):
-                    platformaA = platforma(random.randint(platformaB.x-130,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                    platformaA = platforma(random.randint(platformaB.x-150,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
                 else:
                     platformaA = platforma(random.randint(platformaB.x,platformaB.x+100),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
             platforme.append(platformaB)
