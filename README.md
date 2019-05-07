@@ -17,8 +17,6 @@ ostvarena visina to se skele brže kreću
 
 :small_orange_diamond: **PyGame**
 
-:small_orange_diamond: **Pyganim**
-
 ## Pokretanje
 Potrebno je pokrenuti **Scaffolder.exe**
 
