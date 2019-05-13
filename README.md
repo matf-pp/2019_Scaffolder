@@ -5,7 +5,7 @@ Radnja je smeštena na gradilištu, igrač se penje tako što skače sa skele na
 ostvarena visina to se skele brže kreću
 
 ## Pregled
-![SS](https://scontent.fbud2-1.fna.fbcdn.net/v/t1.15752-9/60060422_316538419225869_8077770273211809792_n.jpg?_nc_cat=106&_nc_ht=scontent.fbud2-1.fna&oh=edb6c5c25973db47745e3370656ef90c&oe=5D65153D)
+![SS](https://scontent.fbud2-1.fna.fbcdn.net/v/t1.15752-9/60434474_474785623062122_3356702578900467712_n.jpg?_nc_cat=109&_nc_ht=scontent.fbud2-1.fna&oh=c7651f5354bd198f22459cf9b207f07e&oe=5D69B7E1)
 
 ## Detalji
 
