@@ -1,6 +1,6 @@
 # Scaffolder :video_game:
 **Scaffolder** je video igra u kojoj je cilj postići što veći rezultat.
-Rezultat zavisi od postignute visine i prikupljenih novčića. 
+Rezultat zavisi od postignute visine. 
 Radnja je smeštena na gradilištu, igrač se penje tako što skače sa skele na skelu.Što je veća
 ostvarena visina to se skele brže kreću
 
