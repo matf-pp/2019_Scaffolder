@@ -1,0 +1,1 @@
+Extract Releases.rar and run Scaffolder.exe
