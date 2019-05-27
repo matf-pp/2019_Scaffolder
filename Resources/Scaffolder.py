@@ -30,8 +30,8 @@ skokD=pygame.transform.scale(pygame.image.load('j1.png') , (64,76))
 skokL=pygame.transform.flip(skokD,True,False)
 pozadina=pygame.image.load('pozadina.jpg')
 clock=pygame.time.Clock()
-platformaSlika=pygame.image.load('platformaSlika.png')
-
+platformaSlika1=[pygame.image.load('platformaSlika.png'),pygame.image.load('platformaSlika1.png'),pygame.image.load('platformaSlika2.png'),pygame.image.load('platformaSlika3.png'),pygame.image.load('platformaSlika4.png'),pygame.image.load('platformaSlika5.png'),pygame.image.load('platformaSlika6.png')]
+platformaSlika=platformaSlika1[0]
 
 #SCORE-------------
 
@@ -142,7 +142,7 @@ class player(object):
 
 ###################### KLASA PLATFORME ##################
 class platforma(object):
-    def __init__(self,x,y,sirObjekta,skorPlatforme):
+    def __init__(self,x ,y , sirObjekta, skorPlatforme):
         self.x=x
         self.y=y
         self.sirObjekta=sirObjekta
@@ -178,6 +178,8 @@ with open("rekordi.txt") as file:
     rekord = file.read()
 pomocna_promenljiva_za_rekord=False
 munja = 5
+ubrzanje=0
+skokUbrzanje=0.5
 brojPlatformi=0
 indikator = False
 start_igre()
@@ -197,7 +199,7 @@ while run:
     #    if plat.collide(igrac.hitbox):
     #        igrac.y=plat.y+igrac.visObjekta
     clock.tick(30)
-    if igrac.y <= visinaProzora/4:
+    if igrac.y <= visinaProzora/5:
         igrac.y += abs(igrac.intenzitetSkoka)
         for plat in platforme:
             plat.y += abs (igrac.intenzitetSkoka)
@@ -232,6 +234,8 @@ while run:
                     skor = 0
                     MOJE_novcici = 0
                     brojPlatformi=0
+                    ubrzanje=0
+                    skokUbrzanje=0.5
                     GameOver = False
                     run = True
                     zemlja = platforma(0,visinaProzora-37,sirinaProzora,0)
@@ -261,23 +265,25 @@ while run:
 ############# GENERACIJA PLATFORMI ###########
     if len(platforme) < 20:
         if len(platforme) == 1:
-            brojPlatformi+=1
-            platformaA = platforma(random.randint(20,sirinaProzora-170),zemlja.y-100, 200,brojPlatformi)
+            brojPlatformi+=1                   
+            platformaA = platforma(random.randint(20,sirinaProzora-170),zemlja.y-100, 150,brojPlatformi)
             platforme.append(platformaA)
         else:
             brojPlatformi+=1
             platformaB = platforme.pop()
             pomocnaProm=random.random()
+            pomocnaProm1=random.randint(platformaB.x,platformaB.x+190)
+            pomocnaProm2=random.randint(platformaB.x-125,platformaB.x)
             if pomocnaProm <0.5:
-                if(platformaB.x <= 100):
-                    platformaA = platforma(random.randint(platformaB.x,platformaB.x+150),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                if pomocnaProm1<sirinaProzora-100:
+                    platformaA = platforma(pomocnaProm1,platformaB.y-100, 150-random.randint(1,50),brojPlatformi)
                 else:
-                    platformaA = platforma(random.randint(platformaB.x-100,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                    platformaA = platforma(pomocnaProm2,platformaB.y-100, 150-random.randint(1,50),brojPlatformi)
             else:
-                if(platformaB.x >= 400):
-                    platformaA = platforma(random.randint(platformaB.x-150,platformaB.x),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                if pomocnaProm2<0:
+                    platformaA = platforma(pomocnaProm1,platformaB.y-100, 150-random.randint(1,50),brojPlatformi)
                 else:
-                    platformaA = platforma(random.randint(platformaB.x,platformaB.x+100),platformaB.y-100, 200-random.randint(1,50),brojPlatformi)
+                    platformaA = platforma(pomocnaProm2,platformaB.y-100, 150-random.randint(1,50),brojPlatformi)                           
             platforme.append(platformaB)
             platforme.append(platformaA) 
     elif platforme[1].skorPlatforme + 4<skor:
@@ -312,12 +318,16 @@ while run:
                 brojacZaPadanje=0
                 if skor < plat.skorPlatforme:
                     skor=plat.skorPlatforme
+                    if skor % 5 == 0:
+                        platformaSlika = platformaSlika1[(skor//5)%7]
+                    if skor % 16 == 15 and ubrzanje <1.5:
+                        ubrzanje+=0.5
+                        
+                        
                 break
-    else: ######      KAD STOJI
+    else: #########___KAD STOJI___#########
         if igrac.x-10 + igrac.sirObjekta-10<igrac.platformaa.x+2 or igrac.x+5> igrac.platformaa.x+igrac.platformaa.sirObjekta:
             igrac.isStoji=False
-            
-
     if not(igrac.isSkok): 
         if not(igrac.isStoji): ####   KAD PADA
             igrac.y+=7
@@ -328,19 +338,19 @@ while run:
             brojacZaPadanje=0
     else:
         if igrac.skokBrojac >= 0: 
-            igrac.y-=(igrac.skokBrojac ** 2)*0.5
+            igrac.y-=(igrac.skokBrojac ** 2)*skokUbrzanje
             igrac.skokBrojac -= 1
         else:
             igrac.isSkok=False
             igrac.isStoji=False
             igrac.skokBrojac=igrac.intenzitetSkoka
-
+    
 ########### POCINJU PLATFORME DA SE POMERAJU ############
     if igrac.y <=256:
         indikator = True
     if indikator == True:
         for p in platforme:
-            p.y += munja
-        igrac.y += munja
+            p.y += munja + ubrzanje
+        igrac.y += munja + ubrzanje
     osveziSliku()
 pygame.quit()
